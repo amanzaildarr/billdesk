@@ -46,63 +46,64 @@ $ npm run start:prod
 $ yarn run start:prod
 ```
 
+## Overview
+
+The `BilldeskService` is a NestJS service that integrates with the Billdesk payment gateway. It provides functionalities
+to create orders, hit the Billdesk API, handle responses, and manage transaction records.
+
+## Dependencies
+
+- `@nestjs/common`: Core NestJS library.
+- `@nestjs/config`: Configuration management for NestJS.
+- `axios`: Promise-based HTTP client for the browser and Node.js.
+- `jws`: JSON Web Signature library for signing and verifying JSON Web Tokens.
+- `mongoose`: MongoDB object modeling tool designed to work in an asynchronous environment.
+- `@nestjs/mongoose`: Mongoose integration for NestJS.
+
 ## Environment Variables
 
-All environment variables are defined in the `env-example` file. Ensure to create a `.env` file in your root directory and populate it with the necessary environment variables as defined in `env-example`.
+Ensure the following environment variables are set in your application:
 
-## Using MongoDB, S3 Bucket, and SendGrid
+- `BILLDESK_SECRET`: Secret key for signing requests.
+- `BILLDESK_MERCHANT_NAME`: Name of the merchant.
+- `BILLDESK_MERCHANT_ID`: Merchant ID for Billdesk.
+- `BILLDESK_CLIENT_ID`: Client ID for Billdesk.
+- `BILLDESK_URL`: URL for the Billdesk API.
+- `BILLDESK_RU`: Return URL for the payment gateway.
 
-### MongoDB
-This project uses MongoDB as the database. Ensure you have a MongoDB instance running and configure the connection string in your `.env` file:
+## Methods
 
-```env
-DB_URI=mongodb://localhost:27017/your-database-name
-```
+### 1. `billdeskApiHit(req: Request, type: string = 'lab_booking')`
 
-### S3 Bucket
-This project uses AWS S3 for file storage. Configure your AWS credentials and bucket details in your `.env` file:
+- **Description**: Sends a request to the Billdesk API to initiate a payment.
+- **Parameters**:
+  - `req`: The HTTP request object.
+  - `type`: The type of transaction (default is 'lab_booking').
+- **Returns**: A promise that resolves to the payment response.
 
-```env
-AWS_ACCESS_KEY=your-access-key-id
-AWS_SECRET_ACCESS_KEY=your-secret-access-key
-AWS_BUCKET_NAME=your-bucket-name
-AWS_REGION=your-aws-region
-```
+### 2. `createOrder(req: Request, productType: BilldeskProductType, id: Types.ObjectId, amount: number, userId: string)`
 
-### SendGrid
-This project uses SendGrid for sending emails. Configure your SendGrid API key in your `.env` file:
+- **Description**: Creates a new order with the specified details.
+- **Parameters**:
+  - `req`: The HTTP request object.
+  - `productType`: The type of product being purchased.
+  - `id`: The booking ID.
+  - `amount`: The amount to be charged.
+  - `userId`: The ID of the user making the payment.
+- **Returns**: A promise that resolves to the order response.
 
-```env
-SENDGRID_API_KEY=your-sendgrid-api-key
-SENDGRID_SENDER_EMAIL=your-email@example.com
-```
+### 3. `billdeskGetResponse(req: Request)`
 
-## API Documentation
+- **Description**: Handles the response from the Billdesk payment gateway.
+- **Parameters**:
+  - `req`: The HTTP request object.
+- **Returns**: The parsed response data.
 
-Comprehensive documentation for the DrSignet APIs is available at [https://updateapi.drsignet.com/docs](https://updateapi.drsignet.com/docs), providing detailed information and interactive access to all available endpoints, helping developers integrate with the DrSignet platform effectively.
+### 4. `list()`
 
-### Key Features
-- Secure and efficient authentication
-- Comprehensive CRUD operations
-- Detailed analytics and reporting
+- **Description**: Retrieves all transaction records from the database.
+- **Returns**: An object containing the total number of records and the records themselves.
 
-### Contact
-For support, please contact our team at [support@drsignet.com](mailto:support@drsignet.com).
+## Usage
 
-### License
-This API is licensed under the MIT License. See the [LICENSE](https://github.com/drsignet/license) file for more details.
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-# billdesk
+To use the `BilldeskService`, inject it into your controller or another service:
